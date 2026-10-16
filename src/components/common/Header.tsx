@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useCompare } from '../../context/CompareContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { DeliverToModal } from './DeliverToModal';
 
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { currentUser, isAuthenticated, isAdmin, logout } = useAuth();
   const { totalItemsCount } = useCart();
   const { totalWishlistCount } = useWishlist();
+  const { compareList, openCompareModal } = useCompare();
   const { language, toggleLanguage, isRTL, t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -306,6 +308,22 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </Link>
 
+            {/* Product Comparison Header Button */}
+            {compareList.length > 0 && (
+              <button
+                type="button"
+                onClick={openCompareModal}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold transition cursor-pointer text-xs"
+                title={t('compareProducts')}
+              >
+                <span className="material-symbols-outlined text-[20px] text-amber-400">compare_arrows</span>
+                <span className="hidden xl:inline">{t('compare')}</span>
+                <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full">
+                  {compareList.length}/3
+                </span>
+              </button>
+            )}
+
             {/* Shopping Cart */}
             <Link
               to="/cart"
@@ -530,6 +548,24 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="material-symbols-outlined text-base">shopping_cart</span>
                   {t('cart')} ({totalItemsCount})
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileDrawerOpen(false);
+                    openCompareModal();
+                  }}
+                  className="w-full text-left flex items-center justify-between py-2 px-2 rounded hover:bg-slate-100 text-slate-700 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-base text-amber-500">compare_arrows</span>
+                    <span>{t('compareProducts')}</span>
+                  </div>
+                  {compareList.length > 0 && (
+                    <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-bold">
+                      {compareList.length}/3
+                    </span>
+                  )}
+                </button>
               </div>
 
               {/* Language Switch in Drawer */}

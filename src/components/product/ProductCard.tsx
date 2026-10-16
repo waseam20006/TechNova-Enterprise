@@ -4,6 +4,7 @@ import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useCompare } from '../../context/CompareContext';
 
 interface ProductCardProps {
   product: Product;
@@ -13,10 +14,12 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { toggleCompare, isInCompare } = useCompare();
   const { t, isRTL } = useLanguage();
   const [isAdded, setIsAdded] = useState(false);
 
   const isFavorited = isInWishlist(product.id);
+  const isCompared = isInCompare(product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -30,6 +33,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist(product);
+  };
+
+  const handleToggleCompare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleCompare(product);
   };
 
   const getBadgeStyle = (badge?: string) => {
@@ -147,6 +156,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
               {isAdded ? t('addedToCart') : t('addToCart')}
             </button>
             <button
+              type="button"
+              onClick={handleToggleCompare}
+              className={`px-2.5 py-2 border rounded font-semibold text-xs flex items-center gap-1 transition cursor-pointer ${
+                isCompared
+                  ? 'bg-blue-600 border-blue-600 text-white shadow-2xs'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+              }`}
+              title={isCompared ? t('removeProduct') : t('selectToCompare')}
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                {isCompared ? 'check_box' : 'check_box_outline_blank'}
+              </span>
+              <span className="hidden sm:inline">{t('compare')}</span>
+            </button>
+            <button
               onClick={handleToggleWishlist}
               className={`p-2 border rounded hover:border-slate-400 transition cursor-pointer ${
                 isFavorited ? 'text-red-500 border-red-200 bg-red-50' : 'text-gray-400 border-gray-200'
@@ -164,25 +188,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
   return (
     <div className="bg-white border border-gray-200 rounded p-3.5 sm:p-4 flex flex-col justify-between hover:shadow-md transition group relative h-full w-full">
       <div>
-        {/* Badge & Wishlist Action Header */}
-        <div className="mb-2 flex items-center justify-between min-h-[20px]">
-          {product.badge ? (
-            <span className={`text-[10px] uppercase px-2 py-0.5 rounded-xs tracking-wider ${getBadgeStyle(product.badge)}`}>
-              {product.badge}
-            </span>
-          ) : (
-            <span className="text-[10px] font-medium text-gray-400">{product.brand}</span>
-          )}
+        {/* Badge, Compare & Wishlist Action Header */}
+        <div className="mb-2 flex items-center justify-between min-h-[22px] gap-1.5">
+          <div className="flex items-center gap-1.5 overflow-hidden">
+            {product.badge ? (
+              <span className={`text-[10px] uppercase px-2 py-0.5 rounded-xs tracking-wider truncate ${getBadgeStyle(product.badge)}`}>
+                {product.badge}
+              </span>
+            ) : (
+              <span className="text-[10px] font-medium text-gray-400 truncate">{product.brand}</span>
+            )}
+          </div>
 
-          <button
-            onClick={handleToggleWishlist}
-            className={`transition p-0.5 rounded hover:scale-110 cursor-pointer ${
-              isFavorited ? 'text-red-500' : 'text-gray-300 hover:text-red-500'
-            }`}
-            title={isFavorited ? 'Remove from Wishlist' : 'Add to Wishlist'}
-          >
-            <span className="material-symbols-outlined text-[18px]">favorite</span>
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Compare Toggle Button */}
+            <button
+              type="button"
+              onClick={handleToggleCompare}
+              className={`flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border transition cursor-pointer ${
+                isCompared
+                  ? 'bg-blue-600 border-blue-600 text-white shadow-2xs'
+                  : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900'
+              }`}
+              title={isCompared ? t('removeProduct') : t('selectToCompare')}
+              aria-label={t('compare')}
+            >
+              <span className="material-symbols-outlined text-[14px]">
+                {isCompared ? 'check_box' : 'check_box_outline_blank'}
+              </span>
+              <span>{t('compare')}</span>
+            </button>
+
+            {/* Wishlist Button */}
+            <button
+              type="button"
+              onClick={handleToggleWishlist}
+              className={`transition p-0.5 rounded hover:scale-110 cursor-pointer ${
+                isFavorited ? 'text-red-500' : 'text-gray-300 hover:text-red-500'
+              }`}
+              title={isFavorited ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            >
+              <span className="material-symbols-outlined text-[18px]">favorite</span>
+            </button>
+          </div>
         </div>
 
         {/* Product Visual Area */}

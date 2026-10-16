@@ -4,6 +4,7 @@ import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useCompare } from '../context/CompareContext';
 import { Header } from '../components/common/Header';
 import { Footer } from '../components/common/Footer';
 import { ProductCard } from '../components/product/ProductCard';
@@ -13,10 +14,12 @@ export const ProductDetailPage: React.FC = () => {
   const { getProductById, products } = useProducts();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { toggleCompare, isInCompare, compareList, openCompareModal } = useCompare();
   const { t, isRTL } = useLanguage();
   const navigate = useNavigate();
 
   const product = id ? getProductById(id) : undefined;
+  const isCompared = product ? isInCompare(product.id) : false;
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
@@ -259,6 +262,34 @@ export const ProductDetailPage: React.FC = () => {
                   <span className="material-symbols-outlined text-[18px]">bolt</span>
                   {t('buyNow')}
                 </button>
+              </div>
+
+              {/* Product Comparison Action */}
+              <div className="pt-2 border-t border-gray-200 space-y-1.5">
+                <button
+                  type="button"
+                  onClick={() => toggleCompare(product)}
+                  className={`w-full py-2 px-3 rounded text-xs font-bold border transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                    isCompared
+                      ? 'bg-blue-600 border-blue-600 text-white shadow-2xs'
+                      : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-base">
+                    {isCompared ? 'check_box' : 'compare_arrows'}
+                  </span>
+                  <span>{isCompared ? `${t('compare')} (${compareList.length}/3)` : t('selectToCompare')}</span>
+                </button>
+
+                {isCompared && (
+                  <button
+                    type="button"
+                    onClick={openCompareModal}
+                    className="w-full text-center text-[11px] font-bold text-blue-700 hover:text-blue-900 hover:underline cursor-pointer block"
+                  >
+                    {t('compareNow')} →
+                  </button>
+                )}
               </div>
 
               <div className="text-[11px] text-gray-500 space-y-1.5 pt-2 border-t border-gray-200">

@@ -6,6 +6,9 @@ import { ProductProvider } from './context/ProductContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { OrderProvider } from './context/OrderContext';
+import { CompareProvider } from './context/CompareContext';
+import { CompareDock } from './components/compare/CompareDock';
+import { CompareModal } from './components/compare/CompareModal';
 
 import { StorefrontPage } from './pages/StorefrontPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
@@ -30,9 +33,10 @@ export default function App() {
             <CartProvider>
               <WishlistProvider>
                 <OrderProvider>
-                  <Routes>
-                    {/* Public Storefront Routes */}
-                    <Route path="/" element={<StorefrontPage />} />
+                  <CompareProvider>
+                    <Routes>
+                      {/* Public Storefront Routes */}
+                      <Route path="/" element={<StorefrontPage />} />
                     <Route path="/product/:id" element={<ProductDetailPage />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/wishlist" element={<WishlistPage />} />
@@ -73,12 +77,16 @@ export default function App() {
                     {/* Fallback to Storefront */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
-                </OrderProvider>
-              </WishlistProvider>
-            </CartProvider>
-          </ProductProvider>
-        </AuthProvider>
-      </LanguageProvider>
+                  {/* Global Side-by-Side Product Comparison Dock & Modal */}
+                  <CompareDock />
+                  <CompareModal />
+                </CompareProvider>
+              </OrderProvider>
+            </WishlistProvider>
+          </CartProvider>
+        </ProductProvider>
+      </AuthProvider>
+    </LanguageProvider>
     </BrowserRouter>
   );
 }
