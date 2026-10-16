@@ -1,0 +1,8 @@
+{
+  "name": "TechNova Hardware Store",
+  "description": "Enterprise-grade high-performance technology storefront and hardware catalog with customer checkout, wishlist, and real-time Admin CRUD dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
